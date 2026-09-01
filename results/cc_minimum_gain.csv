@@ -1,0 +1,37 @@
+regime,cc_mode,limb_condition,acceptable_error,c_min
+capacity,always,intact,1.0,0.0
+capacity,always,L4 failure,1.0,
+capacity,always,L4 slip,1.0,0.05
+capacity,dropout,intact,1.0,0.0
+capacity,dropout,L4 failure,1.0,
+capacity,dropout,L4 slip,1.0,0.05
+capacity,intermittent,intact,1.0,0.0
+capacity,intermittent,L4 failure,1.0,
+capacity,intermittent,L4 slip,1.0,0.1
+capacity,delayed,intact,1.0,0.0
+capacity,delayed,L4 failure,1.0,
+capacity,delayed,L4 slip,1.0,0.05
+capacity,noisy,intact,1.0,0.0
+capacity,noisy,L4 failure,1.0,
+capacity,noisy,L4 slip,1.0,0.05
+capacity,stuck,intact,1.0,0.0
+capacity,stuck,L4 failure,1.0,
+capacity,stuck,L4 slip,1.0,0.05
+sensor_comm,always,intact,1.0,0.0
+sensor_comm,always,L4 failure,1.0,
+sensor_comm,always,L4 slip,1.0,0.0
+sensor_comm,dropout,intact,1.0,0.0
+sensor_comm,dropout,L4 failure,1.0,
+sensor_comm,dropout,L4 slip,1.0,0.0
+sensor_comm,intermittent,intact,1.0,0.0
+sensor_comm,intermittent,L4 failure,1.0,
+sensor_comm,intermittent,L4 slip,1.0,0.0
+sensor_comm,delayed,intact,1.0,0.0
+sensor_comm,delayed,L4 failure,1.0,
+sensor_comm,delayed,L4 slip,1.0,0.0
+sensor_comm,noisy,intact,1.0,0.0
+sensor_comm,noisy,L4 failure,1.0,
+sensor_comm,noisy,L4 slip,1.0,0.0
+sensor_comm,stuck,intact,1.0,0.0
+sensor_comm,stuck,L4 failure,1.0,
+sensor_comm,stuck,L4 slip,1.0,0.0

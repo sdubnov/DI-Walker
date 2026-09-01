@@ -58,13 +58,13 @@ The architectures differ only in the additional three-parameter term.
 
 ### Capacity
 
-Capacity is a matched-parameter no-peer-communication baseline:
+Capacity is a matched-parameter no-peer-communication baseline. It uses each limb's own realized-force sensor, but no other limb's sensor:
 
 ```text
-q_i = q_i_local + W_i [a_i, a_i^2, tanh(2a_i)]
+q_i = q_i_local + W_i [s_i, s_i^2, tanh(2s_i)]
 ```
 
-This gives the baseline the same number of additional parameters as the communication architectures, but it does not give any limb direct access to other limbs. It controls for the possibility that Sensor-Comm performs better merely because it has more parameters.
+This gives the baseline the same number of additional parameters as the communication architectures, and it also gives the baseline local access to realized physical effect. What it does not provide is peer sensing: limb `i` cannot directly read `s_j` for `j != i`. This controls for the possibility that Sensor-Comm performs better merely because it has more parameters or because it uses sensors at all.
 
 ### Act-Comm
 
@@ -75,6 +75,8 @@ q_i = q_i_local + sum_{j != i} W_ij a_j
 ```
 
 This is cross-limb communication, but it communicates intended or internal actuator state rather than realized physical effect.
+
+Act-Comm is included as a diagnostic comparison. The main failure-recovery claim does not rely on it: if a limb is slipping or failed, its activation `a_j` can still indicate that it is trying to push, while its sensor `s_j` reports that little or no force was actually produced.
 
 ### Sensor-Comm
 
@@ -94,7 +96,7 @@ This lets the controller respond to what another limb actually accomplished, not
 
 ## Weak Central Control
 
-Some experiments add a weak global correction signal, called central control or CC. CC observes coarse target-relative error and adds a small left/right differential correction:
+Some experiments add a weak global correction signal. In this repository, `CC` means `central control`: a coarse global error channel, not a full high-bandwidth controller. CC observes target-relative path and heading error and adds a small left/right differential correction:
 
 ```text
 q_i <- q_i + k_CC * A_CC(t) * e_goal * side_i
@@ -110,6 +112,25 @@ side_i   left/right limb sign
 ```
 
 CC is not part of Sensor-Comm. It is a separate global channel used to test whether distributed sensory communication can reduce reliance on reliable centralized supervision.
+
+The implemented CC error is:
+
+```text
+e_lat  = target displacement projected onto the body's lateral axis
+e_head = wrapped(target_heading - body_heading)
+e_goal = clip(0.65 * e_lat + 0.35 * e_head, -1, 1)
+```
+
+The availability term `A_CC(t)` implements central-control disturbances:
+
+```text
+always       A_CC(t) = 1
+dropout      A_CC(t) = 1 before the dropout step, then 0
+intermittent A_CC(t) = periodic on/off availability
+delayed      CC uses an older error signal
+noisy        CC receives additive noise
+stuck        CC freezes at its value at the stuck step
+```
 
 ## Disturbance Conditions
 
@@ -152,12 +173,12 @@ The main reported metric is mean late path error. Lower is better.
 
 | Disturbance condition | Capacity | Sensor-Comm | Sensor advantage |
 | --- | ---: | ---: | ---: |
-| CC dropout only | 0.575 | 0.616 | -0.041 |
-| CC intermittent only | 0.689 | 0.658 | 0.031 |
-| L4 failure only | 1.961 | 1.501 | 0.460 |
-| L4 failure + CC dropout | 2.197 | 1.611 | 0.586 |
-| L4 slip only | 0.859 | 0.681 | 0.179 |
-| L4 slip + CC dropout | 0.990 | 0.751 | 0.239 |
+| CC dropout only | 0.553 | 0.616 | -0.062 |
+| CC intermittent only | 0.653 | 0.658 | -0.005 |
+| L4 failure only | 1.758 | 1.501 | 0.257 |
+| L4 failure + CC dropout | 1.961 | 1.611 | 0.350 |
+| L4 slip only | 0.754 | 0.681 | 0.073 |
+| L4 slip + CC dropout | 0.869 | 0.751 | 0.118 |
 
 The interpretation is deliberately cautious.
 

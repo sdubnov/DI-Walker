@@ -56,7 +56,8 @@ def population_losses(params: np.ndarray, regime: str | Regime, scenarios=TRAIN_
                 + gself * activation
             )
             if regime == Regime.CAPACITY:
-                own = np.stack((activation, activation * activation, np.tanh(2 * activation)), axis=2)
+                own_sensor = sensed_force / FORCE_SCALE
+                own = np.stack((own_sensor, own_sensor * own_sensor, np.tanh(2 * own_sensor)), axis=2)
                 q += np.sum(weights * own, axis=2)
             elif regime == Regime.ACT_COMM:
                 other = np.empty((pop, 4, 3), dtype=float)
