@@ -66,18 +66,6 @@ q_i = q_i_local + W_i [s_i, s_i^2, tanh(2s_i)]
 
 This gives the baseline the same number of additional parameters as the communication architectures, and it also gives the baseline local access to realized physical effect. What it does not provide is peer sensing: limb `i` cannot directly read `s_j` for `j != i`. This controls for the possibility that Sensor-Comm performs better merely because it has more parameters or because it uses sensors at all.
 
-### Act-Comm
-
-Act-Comm gives each limb access to the other limbs' actuator activations:
-
-```text
-q_i = q_i_local + sum_{j != i} W_ij a_j
-```
-
-This is cross-limb communication, but it communicates intended or internal actuator state rather than realized physical effect.
-
-Act-Comm is included as a diagnostic comparison. The main failure-recovery claim does not rely on it: if a limb is slipping or failed, its activation `a_j` can still indicate that it is trying to push, while its sensor `s_j` reports that little or no force was actually produced.
-
 ### Sensor-Comm
 
 Sensor-Comm gives each limb access to the other limbs' sensed realized forces:
@@ -196,7 +184,7 @@ This suggests a centralization-distribution tradeoff. Sensor-Comm may not beat a
 robust_walker/
   config.py          physical constants and body geometry
   tasks.py           goal-conditioned trajectory generators
-  controllers.py     Capacity, Act-Comm, Sensor-Comm, and weak CC
+  controllers.py     Capacity, Sensor-Comm, and weak CC
   faults.py          limb failure and intermittent slip disturbances
   simulation.py      canonical rollout implementation
   training.py        vectorized CEM policy fitting
@@ -218,13 +206,25 @@ experiments/
 
 | Script | Purpose | Main outputs |
 | --- | --- | --- |
-| `01_train_policies.py` | Train matched Capacity, Act-Comm, and Sensor-Comm policies with vectorized CEM. | `policies/v4_1b_policies.npz`, `results/v4_1b_train.csv` |
+| `01_train_policies.py` | Train matched Capacity and Sensor-Comm policies with vectorized CEM. | `policies/v4_1b_policies.npz`, `results/v4_1b_train.csv` |
 | `02_limb_failure.py` | Evaluate held-out limb weakening and complete limb failure on ID and OOS tasks. | `results/limb_failure_results.csv`, `results/limb_failure_summary.csv` |
 | `03_cc_dropout.py` | Evaluate weak-CC dropout, intermittent CC, L4 failure, L4 slip, and compound cases. | `results/cc_dropout_results.csv`, `results/cc_dropout_summary.csv` |
 | `04_smoke_test.py` | Fast deterministic import/rollout/metric check. | Console pass/fail |
 | `05_make_animations.py` | Generate representative side-by-side Capacity vs Sensor-Comm GIFs. | `results/animations/*.gif`, `animation_cases.csv` |
 | `06_cc_response_surface.py` | Sweep CC gain across normal, dropout, intermittent, delayed, noisy, and stuck CC modes. | response-surface, minimum-gain, and retention CSVs |
 | `07_make_spacious_summary_animation.py` | Generate a large, slideshow-readable intermittent-CC plus L4-slip summary GIF. | `v4_3d_large_slow_intermittent_cc_l4_slip_spacious.gif` |
+
+`05_make_animations.py` accepts stronger disturbance settings for presentation examples. For example:
+
+```bash
+python -B experiments/05_make_animations.py \
+  --tasks s_lr sine chirp \
+  --cc-gain 0.10 --cc-drop-step 90 \
+  --limb-start 50 --failure-strength 0.0 \
+  --slip-strength 0.05 --slip-steps 18
+```
+
+The script searches the requested trajectories and keeps the representative case with the largest Sensor-Comm advantage for each animation scenario. Lower `--slip-strength`, longer `--slip-steps`, earlier `--limb-start`, and earlier `--cc-drop-step` create more severe conditions. The output GIFs and a CSV describing the selected seed, trajectory, and errors are written to `results/animations/`.
 
 ## Running
 

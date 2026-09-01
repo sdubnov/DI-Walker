@@ -10,7 +10,7 @@ The most important empirical mechanism is Sensor-Comm:
 q_i = q_i_local + sum_{j != i} W_ij s_j
 ```
 
-where `s_j` is another limb's realized force, available on the next control step. This differs from Act-Comm, which communicates actuator activation rather than realized local physical consequence.
+where `s_j` is another limb's realized force, available on the next control step. The public comparison therefore focuses on local-sensor Capacity versus peer-sensor Sensor-Comm.
 
 The core comparison should therefore remain:
 

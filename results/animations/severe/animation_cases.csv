@@ -1,0 +1,4 @@
+scenario,task,seed,capacity_late_path_error,sensor_comm_late_path_error,sensor_advantage,animation
+CC dropout only,s_lr,9104,0.7571707871569862,0.35109398785805535,0.4060767992989308,results/animations/severe/cc_dropout_only.gif
+L4 failure + CC dropout,s_lr,9104,6.000551730417051,3.016842425105943,2.983709305311108,results/animations/severe/l4_failure_cc_dropout.gif
+L4 intermittent slip + CC dropout,s_lr,9104,4.011703521451167,1.9229811220790112,2.0887223993721564,results/animations/severe/l4_slip_cc_dropout.gif

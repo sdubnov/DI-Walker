@@ -14,7 +14,6 @@ class Regime(str, Enum):
     """Controller information-routing regimes."""
 
     CAPACITY = "capacity"
-    ACT_COMM = "act_comm"
     SENSOR_COMM = "sensor_comm"
 
 
@@ -77,9 +76,6 @@ class Controller:
             own_sensor = sensed_force / FORCE_SCALE
             own = np.column_stack((own_sensor, own_sensor * own_sensor, np.tanh(2 * own_sensor)))
             q += np.sum(p.W * own, axis=1)
-        elif self.regime == Regime.ACT_COMM:
-            for i in range(4):
-                q[i] += p.W[i] @ np.delete(activation, i)
         elif self.regime == Regime.SENSOR_COMM:
             source = sensed_force / FORCE_SCALE
             for i in range(4):

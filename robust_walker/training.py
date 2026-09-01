@@ -59,11 +59,6 @@ def population_losses(params: np.ndarray, regime: str | Regime, scenarios=TRAIN_
                 own_sensor = sensed_force / FORCE_SCALE
                 own = np.stack((own_sensor, own_sensor * own_sensor, np.tanh(2 * own_sensor)), axis=2)
                 q += np.sum(weights * own, axis=2)
-            elif regime == Regime.ACT_COMM:
-                other = np.empty((pop, 4, 3), dtype=float)
-                for i in range(4):
-                    other[:, i, :] = np.delete(activation, i, axis=1)
-                q += np.sum(weights * other, axis=2)
             elif regime == Regime.SENSOR_COMM:
                 source = sensed_force / FORCE_SCALE
                 other = np.empty((pop, 4, 3), dtype=float)

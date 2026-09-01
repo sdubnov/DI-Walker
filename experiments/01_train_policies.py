@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Train frozen policies for Capacity, Act-Comm, and Sensor-Comm."""
+"""Train frozen Capacity and Sensor-Comm policies."""
 
 from __future__ import annotations
 
@@ -25,7 +25,7 @@ def main() -> None:
 
     policies = {}
     rows = []
-    for regime in ["capacity", "act_comm", "sensor_comm"]:
+    for regime in ["capacity", "sensor_comm"]:
         for seed in args.seeds:
             params, loss = cem(regime, seed, iters=args.iters, pop=args.pop, elite=args.elite)
             policies[(regime, seed)] = params
