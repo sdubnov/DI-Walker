@@ -1,0 +1,2 @@
+scenario,task,seed,capacity_late_path_error,sensor_comm_late_path_error,sensor_advantage,animation
+intermittent CC + L4 intermittent slip,s_lr,9104,1.6010352528571414,0.5771193729065593,1.023915879950582,results/animations/v4_3d_large_slow_intermittent_cc_l4_slip_spacious.gif
