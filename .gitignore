@@ -1,0 +1,10 @@
+.DS_Store
+results/*.csv
+results/*.png
+results/*.gif
+results/**/*.csv
+results/**/*.png
+results/**/*.gif
+policies/*.npz
+__pycache__/
+*.pyc
