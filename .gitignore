@@ -8,3 +8,6 @@ results/**/*.gif
 policies/*.npz
 __pycache__/
 *.pyc
+
+# Internal theory drafts and report renderings.
+reports/

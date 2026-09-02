@@ -260,7 +260,7 @@ python -B experiments/02_limb_failure.py
 
 ## Information-Theoretic Motivation
 
-The integrated theoretical analysis is available as [Markdown](reports/elliit-theory-integration.md) and as a [readable HTML report](reports/elliit-theory-integration.html). It compares the ELLIIT report versions, connects Information Dynamics, Predictive Information, Directed Information, Transfer Entropy, and SymTE, and identifies which claims are established, proposed, or still require measurement. The HTML file includes print styling for PDF export from a browser.
+The theoretical report is being consolidated separately from this public repository. The public project documentation focuses on the reproducible simulation, controller definitions, and empirical results.
 
 The current results are functional results: they measure tracking error and failure recovery. They do not by themselves prove that the communicated channels contain task-relevant predictive information.
 
