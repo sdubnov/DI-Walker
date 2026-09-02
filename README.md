@@ -260,6 +260,8 @@ python -B experiments/02_limb_failure.py
 
 ## Information-Theoretic Motivation
 
+The integrated theoretical analysis is in [`reports/elliit-theory-integration.md`](reports/elliit-theory-integration.md). It compares the ELLIIT report versions, connects Information Dynamics, Predictive Information, Directed Information, Transfer Entropy, and SymTE, and identifies which claims are established, proposed, or still require measurement.
+
 The current results are functional results: they measure tracking error and failure recovery. They do not by themselves prove that the communicated channels contain task-relevant predictive information.
 
 The next step is to estimate information-theoretic diagnostics from rollout logs, such as:
