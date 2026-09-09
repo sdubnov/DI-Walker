@@ -7,19 +7,36 @@ from enum import Enum
 
 import numpy as np
 
-from .config import BODY, FORCE_SCALE, PARAM_DIM
+from .config import BODY, FORCE_SCALE, LOCAL_PARAM_DIM
 
 
 class Regime(str, Enum):
     """Controller information-routing regimes."""
 
+    NO_SENSOR = "no_sensor"
+    OWN_SENSOR = "own_sensor"
+    PEER_SENSOR = "peer_sensor"
+    ALL_LINEAR = "all_linear"
+    # Legacy archive identifiers.
     CAPACITY = "capacity"
     SENSOR_COMM = "sensor_comm"
+
+    @property
+    def sensor_feature_count(self) -> int:
+        if self in {Regime.NO_SENSOR}:
+            return 0
+        if self in {Regime.OWN_SENSOR}:
+            return 1
+        if self in {Regime.PEER_SENSOR, Regime.CAPACITY, Regime.SENSOR_COMM}:
+            return 3
+        if self in {Regime.ALL_LINEAR}:
+            return 4
+        raise ValueError(f"unknown regime: {self}")
 
 
 @dataclass(frozen=True)
 class ControllerParams:
-    """Structured view of the 36-parameter policy vector."""
+    """Structured view of a policy vector for one controller regime."""
 
     bias: np.ndarray
     gv: np.ndarray
@@ -30,14 +47,17 @@ class ControllerParams:
     W: np.ndarray
 
     @classmethod
-    def from_vector(cls, p: np.ndarray) -> "ControllerParams":
-        """Split a flat 36-vector into local gains and communication weights."""
+    def from_vector(cls, p: np.ndarray, regime: Regime) -> "ControllerParams":
+        """Split a flat policy vector into local gains and sensor weights."""
 
         p = np.asarray(p, dtype=float)
-        if p.shape != (PARAM_DIM,):
-            raise ValueError(f"expected parameter vector of shape {(PARAM_DIM,)}, got {p.shape}")
-        chunks = [p[k : k + 4] for k in range(0, 24, 4)]
-        return cls(*chunks, W=p[24:].reshape(4, 3))
+        n_weights = 4 * regime.sensor_feature_count
+        expected = LOCAL_PARAM_DIM + n_weights
+        if p.shape != (expected,):
+            raise ValueError(f"expected parameter vector of shape {(expected,)}, got {p.shape}")
+        chunks = [p[k : k + 4] for k in range(0, LOCAL_PARAM_DIM, 4)]
+        weights = p[LOCAL_PARAM_DIM:].reshape(4, regime.sensor_feature_count)
+        return cls(*chunks, W=weights)
 
 
 @dataclass(frozen=True)
@@ -51,7 +71,8 @@ class Controller:
     def from_vector(cls, regime: str | Regime, p: np.ndarray) -> "Controller":
         """Build a controller from a regime name and flat parameter vector."""
 
-        return cls(Regime(regime), ControllerParams.from_vector(p))
+        selected = Regime(regime)
+        return cls(selected, ControllerParams.from_vector(p, selected))
 
     def logits(
         self,
@@ -72,14 +93,21 @@ class Controller:
         ew = wd - omega
         q = p.bias + p.gv * ev + p.gcmd * wd + p.gyaw * ew - p.glat * vl + p.gself * activation
 
-        if self.regime == Regime.CAPACITY:
+        if self.regime == Regime.NO_SENSOR:
+            pass
+        elif self.regime == Regime.OWN_SENSOR:
+            source = sensed_force / FORCE_SCALE
+            q += self.params.W[:, 0] * source
+        elif self.regime == Regime.CAPACITY:
             own_sensor = sensed_force / FORCE_SCALE
             own = np.column_stack((own_sensor, own_sensor * own_sensor, np.tanh(2 * own_sensor)))
             q += np.sum(p.W * own, axis=1)
-        elif self.regime == Regime.SENSOR_COMM:
+        elif self.regime in {Regime.PEER_SENSOR, Regime.SENSOR_COMM}:
             source = sensed_force / FORCE_SCALE
             for i in range(4):
                 q[i] += p.W[i] @ np.delete(source, i)
+        elif self.regime == Regime.ALL_LINEAR:
+            q += np.sum(p.W * (sensed_force / FORCE_SCALE)[None, :], axis=1)
         else:
             raise ValueError(f"unknown regime: {self.regime}")
 

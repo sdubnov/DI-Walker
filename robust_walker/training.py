@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from .config import BODY, DT, FORCE_SCALE, PARAM_DIM, T, TAU
+from .config import BODY, DT, FORCE_SCALE, LOCAL_PARAM_DIM, T, TAU
 from .controllers import Regime
 from .faults import LimbFault
 from .tasks import TRAIN_TASKS, Task
@@ -14,14 +14,26 @@ for limb, task in enumerate([TRAIN_TASKS[0], TRAIN_TASKS[2], TRAIN_TASKS[4], TRA
     TRAIN_SCENARIOS.append((task, LimbFault(limb=limb, mode="loss", strength=0.75, start_step=80)))
 
 
-def population_losses(params: np.ndarray, regime: str | Regime, scenarios=TRAIN_SCENARIOS) -> np.ndarray:
+def population_losses(
+    params: np.ndarray,
+    regime: str | Regime,
+    scenarios=TRAIN_SCENARIOS,
+    noise_sigma: float = 0.0,
+    noise_correlation: float = 0.0,
+    noise_seed: int = 0,
+) -> np.ndarray:
     """Evaluate a candidate population on the V4.1b training curriculum."""
 
     regime = Regime(regime)
     pop = params.shape[0]
-    bias, gv, gcmd, gyaw, glat, gself = [params[:, k : k + 4] for k in range(0, 24, 4)]
-    weights = params[:, 24:].reshape(pop, 4, 3)
+    expected = LOCAL_PARAM_DIM + 4 * regime.sensor_feature_count
+    if params.shape[1] != expected:
+        raise ValueError(f"{regime.value} expects {expected} parameters, got {params.shape[1]}")
+    bias, gv, gcmd, gyaw, glat, gself = [params[:, k : k + 4] for k in range(0, LOCAL_PARAM_DIM, 4)]
+    weights = params[:, LOCAL_PARAM_DIM:].reshape(pop, 4, regime.sensor_feature_count)
     losses = []
+    if not 0.0 <= noise_correlation < 1.0:
+        raise ValueError("noise_correlation must be in [0, 1)")
 
     for task, fault in scenarios:
         state = np.zeros((pop, 6), dtype=float)
@@ -33,6 +45,8 @@ def population_losses(params: np.ndarray, regime: str | Regime, scenarios=TRAIN_
         yaw_err = np.zeros(pop)
         act_cost = np.zeros(pop)
         heading_err = np.zeros(pop)
+        noise_state = np.zeros((pop, 4), dtype=float)
+        noise_rng = np.random.default_rng(noise_seed + len(losses))
         n = 0
 
         for t in range(T):
@@ -55,16 +69,22 @@ def population_losses(params: np.ndarray, regime: str | Regime, scenarios=TRAIN_
                 - glat * vl[:, None]
                 + gself * activation
             )
-            if regime == Regime.CAPACITY:
+            if regime == Regime.NO_SENSOR:
+                pass
+            elif regime == Regime.OWN_SENSOR:
+                q += weights[:, :, 0] * (sensed_force / FORCE_SCALE)
+            elif regime == Regime.CAPACITY:
                 own_sensor = sensed_force / FORCE_SCALE
                 own = np.stack((own_sensor, own_sensor * own_sensor, np.tanh(2 * own_sensor)), axis=2)
                 q += np.sum(weights * own, axis=2)
-            elif regime == Regime.SENSOR_COMM:
+            elif regime in {Regime.PEER_SENSOR, Regime.SENSOR_COMM}:
                 source = sensed_force / FORCE_SCALE
                 other = np.empty((pop, 4, 3), dtype=float)
                 for i in range(4):
                     other[:, i, :] = np.delete(source, i, axis=1)
                 q += np.sum(weights * other, axis=2)
+            elif regime == Regime.ALL_LINEAR:
+                q += np.sum(weights * (sensed_force / FORCE_SCALE)[:, None, :], axis=2)
             else:
                 raise ValueError(f"unknown regime: {regime}")
 
@@ -78,6 +98,12 @@ def population_losses(params: np.ndarray, regime: str | Regime, scenarios=TRAIN_
                     force[:, fault.limb] *= fault.strength
                 elif fault.mode == "slip" and ((t - fault.start_step) % fault.slip_period) < fault.slip_steps:
                     force[:, fault.limb] *= fault.slip_strength
+            if noise_sigma:
+                noise_state = (
+                    noise_correlation * noise_state
+                    + np.sqrt(1.0 - noise_correlation**2) * noise_rng.normal(size=(pop, 4))
+                )
+                force *= np.clip(1.0 + noise_sigma * noise_state, 0.0, None)
             sensed_force = force.copy()
 
             total_force = force.sum(axis=1)
@@ -115,18 +141,28 @@ def cem(
     pop: int = 36,
     elite: int = 7,
     std: float = 0.40,
+    noise_sigma: float = 0.0,
+    noise_correlation: float = 0.0,
 ) -> tuple[np.ndarray, float]:
     """Fit one policy with the Cross-Entropy Method optimizer."""
 
     rng = np.random.default_rng(seed)
-    mu = np.zeros(PARAM_DIM, dtype=float)
-    sd = np.full(PARAM_DIM, std, dtype=float)
+    regime = Regime(regime)
+    param_dim = LOCAL_PARAM_DIM + 4 * regime.sensor_feature_count
+    mu = np.zeros(param_dim, dtype=float)
+    sd = np.full(param_dim, std, dtype=float)
     best = mu.copy()
     best_loss = np.inf
 
     for _ in range(iters):
-        candidates = mu + sd * rng.normal(size=(pop, PARAM_DIM))
-        losses = population_losses(candidates, regime)
+        candidates = mu + sd * rng.normal(size=(pop, param_dim))
+        losses = population_losses(
+            candidates,
+            regime,
+            noise_sigma=noise_sigma,
+            noise_correlation=noise_correlation,
+            noise_seed=seed * 1000 + _,
+        )
         ids = np.argsort(losses)[:elite]
         elites = candidates[ids]
         mu = 0.25 * mu + 0.75 * elites.mean(axis=0)

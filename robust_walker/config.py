@@ -18,4 +18,6 @@ BODY = np.array(
     ],
     dtype=float,
 )
+LOCAL_PARAM_DIM = 24
+# Legacy matched-parameter policy dimension (Own-Kernel and Peer-Sensor).
 PARAM_DIM = 36

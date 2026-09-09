@@ -64,7 +64,7 @@ def main() -> None:
     policies = load_policy_file(args.policies)
     rows = []
     for (regime, seed), params in policies.items():
-        if regime not in {"capacity", "sensor_comm"}:
+        if regime not in {"no_sensor", "own_sensor", "peer_sensor", "all_linear", "capacity", "sensor_comm"}:
             continue
         controller = Controller.from_vector(regime, params)
         for task in TASKS:
@@ -95,7 +95,8 @@ def main() -> None:
     write_csv(out.with_name("cc_response_surface_summary.csv"), summary)
 
     cmin_rows = []
-    for regime in ["capacity", "sensor_comm"]:
+    regimes = sorted({row["regime"] for row in summary})
+    for regime in regimes:
         for cc_mode in CC_MODES:
             for limb_condition, _, _ in LIMB_CONDITIONS:
                 eligible = [

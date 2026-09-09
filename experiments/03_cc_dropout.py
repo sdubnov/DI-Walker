@@ -39,7 +39,15 @@ def main() -> None:
     policies = load_policy_file(args.policies)
     rows = []
     for (regime, seed), params in policies.items():
-        if regime not in {"capacity", "sensor_comm"}:
+        if regime not in {
+            "no_sensor",
+            "own_sensor",
+            "peer_sensor",
+            "all_linear",
+            # Keep evaluating legacy archives.
+            "capacity",
+            "sensor_comm",
+        }:
             continue
         controller = Controller.from_vector(regime, params)
         for task in TASKS:
