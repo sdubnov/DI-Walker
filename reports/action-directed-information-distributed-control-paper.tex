@@ -135,10 +135,14 @@ increment is
   =I(M^{t-1};U_t\mid U^{t-1},C^t).
   \label{eq:te}
 \end{equation}
-The receiver's own action history and context are conditioned out, so the
+This conditional predictive-information construction follows the transfer
+entropy perspective of Schreiber \cite{schreiber2000}. The receiver's own
+action history and context are conditioned out, so the
 quantity asks whether the message supplies additional predictive information.
 
-Sequence-level Directed Information is commonly written as
+Sequence-level Directed Information, following Massey's causal formulation
+and later information-dynamics treatments \cite{massey1990,dubnov2024a}, is
+commonly written as
 \begin{equation}
  I(M^T\!\to\!U^T\Vert C^T)
  =\sum_{t=1}^{T}I(M^t;U_t\mid U^{t-1},C^t).
@@ -159,7 +163,9 @@ not an exact asymptotic Directed Information or channel capacity.
 \subsection{Information-to-go, IT-PAC, and empowerment}
 
 Information-to-go approaches evaluate information according to its relevance
-for future decisions and goal achievement. IT-PAC is used here as a conceptual
+for future decisions and goal achievement. Following Tishby and Polani's
+information-theoretic treatment of the perception--action cycle
+\cite{tishbypolani2011}, IT-PAC is used here as a conceptual
 reference for this decision-relevance principle: useful information is not
 merely information that predicts another signal, but information that helps
 select actions with consequences for future function. The present experiment
@@ -201,7 +207,8 @@ from singular values $\sigma_j$ of a Jacobian product:
  \frac{1}{H\log 2}\sum_{\sigma_j>1}\log\sigma_j.
  \label{eq:lyap}
 \end{equation}
-Equation~\eqref{eq:lyap} is not automatically the data-rate threshold for a
+This use of positive characteristic exponents is motivated by Pesin's smooth
+ergodic theory \cite{pesin1977}. Equation~\eqref{eq:lyap} is not automatically the data-rate threshold for a
 nonlinear closed-loop walker. A plant can remain predictable while tracking
 the wrong trajectory after a fault. We therefore use the data-rate theorem as
 motivation for relating information, instability, and robustness, not as a
@@ -672,6 +679,8 @@ The corrected action-information analysis is in
 The authoritative data files are
 \texttt{results/four\_architecture\_cc\_dropout\_summary.csv} and
 \texttt{results/action\_directed\_information\_corrected.csv}.
+The complete source code, data, figures, and experiment documentation are
+available at \url{https://github.com/sdubnov/DI-Walker}.
 The MLP estimators use standardized inputs, AdamW optimization,
 validation-based early stopping, matched parameter counts, and held-out
 policy seeds, routes, and force-noise realizations. The complete file map is
@@ -679,29 +688,40 @@ in \texttt{reports/report-manifest.tsv}.
 
 \begin{thebibliography}{99}
 \bibitem{polani2009} D. Polani, ``Information: Currency of life?,''
-\emph{HFSP Journal}, vol. 3, pp. 307--316, 2009.
-\bibitem{shalizi2001} C. R. Shalizi and C. Moore, ``What is a macrostate?
-Subjective observation and objective dynamics,'' arXiv:cond-mat/0303625, 2003.
+\emph{HFSP Journal}, vol. 3, no. 5, pp. 307--316, 2009,
+doi:10.2976/1.3171566.
+\bibitem{shalizi2001} C. R. Shalizi and C. Moore, ``What Is a Macrostate?
+Subjective Observations and Objective Dynamics,'' arXiv:cond-mat/0303625, 2003.
 \bibitem{klein2005} S. Klyubin, D. Polani, and C. Nehaniv, ``Empowerment: A
-universal agent-centric measure of control,'' in \emph{IEEE CEC}, 2005.
+universal agent-centric measure of control,'' in \emph{Proceedings of the
+2005 IEEE Congress on Evolutionary Computation}, vol. 1, pp. 128--135, 2005,
+doi:10.1109/CEC.2005.1554676.
 \bibitem{schreiber2000} T. Schreiber, ``Measuring information transfer,''
-\emph{Physical Review Letters}, vol. 85, pp. 461--464, 2000.
+\emph{Physical Review Letters}, vol. 85, no. 2, pp. 461--464, 2000,
+doi:10.1103/PhysRevLett.85.461.
 \bibitem{massey1990} J. L. Massey, ``Causality, feedback and directed
-information,'' in \emph{ISITA}, 1990.
+information,'' in \emph{Proceedings of the 1990 International Symposium on
+Information Theory and Its Applications (ISITA-90)}, pp. 303--305, 1990.
 \bibitem{nair2007} G. N. Nair, F. Fagnani, S. Zampieri, and R. J. Evans,
 ``Feedback control under data rate constraints: An overview,''
-\emph{Proceedings of the IEEE}, vol. 95, pp. 108--137, 2007.
-\bibitem{mittersahai2004} S. K. Mitter and A. Sahai, ``The necessity and
-sufficiency of anytime capacity for stabilization of a linear system over a
-noisy communication link,'' in \emph{CDC}, 2004.
+\emph{Proceedings of the IEEE}, vol. 95, no. 1, pp. 108--137, 2007,
+doi:10.1109/JPROC.2006.887294.
+\bibitem{mittersahai2004} A. Sahai and S. K. Mitter, ``The necessity and
+sufficiency of anytime capacity for control over a noisy communication link,''
+in \emph{Proceedings of the 43rd IEEE Conference on Decision and Control},
+vol. 2, pp. 1896--1901, 2004, doi:10.1109/CDC.2004.1430324.
+\bibitem{tishbypolani2011} N. Tishby and D. Polani, ``Information Theory of
+Decisions and Actions,'' in V. Cutsuridis, A. Hussain, and J. G. Taylor, eds.,
+\emph{Perception-Action Cycle: Models, Architectures, and Hardware}, pp.
+601--636, Springer, 2011, doi:10.1007/978-1-4419-1452-1\_19.
 \bibitem{dubnov2024a} S. Dubnov, ``Directed Information and Symmetric Transfer
 Entropy,'' \emph{Entropy}, 2024, \url{https://www.mdpi.com/2673-9984/5/1/49}.
-\bibitem{dubnov2024b} S. Dubnov, ``Total information flow in sequential and
-generative models,'' arXiv:2402.06810, 2024,
+\bibitem{dubnov2024b} V. Gokul, C. Francis, and S. Dubnov, ``Evaluating
+Co-Creativity using Total Information Flow,'' arXiv:2402.06810, 2024,
 \url{https://arxiv.org/pdf/2402.06810}.
 \bibitem{pesin1977} Y. B. Pesin, ``Characteristic Lyapunov exponents and
 smooth ergodic theory,'' \emph{Russian Mathematical Surveys}, vol. 32,
-pp. 55--114, 1977.
+no. 4, pp. 55--114, 1977, doi:10.1070/RM1977v032n04ABEH001639.
 \end{thebibliography}
 
 \end{document}
