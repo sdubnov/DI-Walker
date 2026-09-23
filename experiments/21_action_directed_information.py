@@ -104,10 +104,27 @@ def window_pool(items, history):
 
 
 def post_event_windows(items, history, event_step):
-    context, message, target = window_pool(items, history)
-    n_per_limb = target.size // 4
-    keep = np.repeat(np.arange(history, history + n_per_limb) >= event_step, 4)
-    return context[keep], message[keep], target[keep]
+    """Return windows whose target timestamp is after the event.
+
+    ``make_windows`` emits rows in limb-major order for each rollout.  Build
+    the timestamp mask with that same order and reset it for every item so
+    event filtering cannot cross rollout or limb boundaries.
+    """
+
+    selected = []
+    for item in items:
+        context, message, target = make_windows(*item, history)
+        n_limbs, n_steps, _ = item[0].shape
+        timestamps = np.tile(np.arange(history, n_steps), n_limbs)
+        keep = timestamps >= event_step
+        selected.append((context[keep], message[keep], target[keep]))
+    if not selected:
+        raise ValueError("post_event_windows requires at least one rollout")
+    return (
+        np.vstack([part[0] for part in selected]),
+        np.vstack([part[1] for part in selected]),
+        np.concatenate([part[2] for part in selected]),
+    )
 
 
 def score(model, norm, variance, x, y):

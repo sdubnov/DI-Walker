@@ -1,0 +1,49 @@
+path	category	status	evidence_role	primary_code_or_data	notes
+di-walker-lesson-summary.tex	theory-model;functional;itpac	needs-update	didactic narrative	see referenced results	Best existing lecture structure; action table predates corrected indexing.
+di-walker-lesson-summary.pdf	theory-model;functional;itpac	needs-update	didactic PDF	see referenced results	Regenerate after correcting numerical table and push-pull status.
+di-walker-current-reference-report.tex	theory-model;functional;itpac;validation	needs-update	repository reference	robust_walker/; experiments/21_action_directed_information.py	Comprehensive but contains legacy Own-Kernel and pre-correction tables.
+di-walker-current-reference-report.pdf	theory-model;functional;itpac;validation	needs-update	repository reference	see TeX source	Do not use as final numerical reference until updated.
+di-walker-integrated-study-report.tex	theory-model;functional;itpac;exploratory	historical synthesis	multiple result CSVs	Useful integrated draft; protocols are mixed across versions.
+di-walker-integrated-study-report.pdf	theory-model;functional;itpac;exploratory	historical synthesis	see TeX source	Retain in history.
+di-walker-detailed-simulation-theory-report.tex	theory-model;validation;exploratory	historical development	multiple experiment scripts	Documents estimator development and abandoned alternatives.
+di-walker-detailed-simulation-theory-report.pdf	theory-model;validation;exploratory	historical development	see TeX source	Retain for research tracking.
+di-estimation-prediction-method.tex	theory-model;itpac	current method reference	experiments/21_action_directed_information.py	MLP architecture, training, calibration, and timing.
+di-estimation-prediction-method.pdf	theory-model;itpac	current method reference	see TeX source	Use for estimator appendix material.
+adversarial-push-pull-experiment.tex	functional;exploratory	current secondary result	experiments/26_adversarial_push_pull.py	Functional push-pull results and matched counterfactual analysis.
+adversarial-push-pull-experiment.pdf	functional;exploratory	current secondary result	see TeX source	Use as optional robustness extension; not primary DI evidence.
+predictor-only-itpac-rate-report.tex	itpac;exploratory	diagnostic	experiments/25_predictor_quantization_itpac.py	Quantization only in predictor input; not closed-loop capacity.
+predictor-only-itpac-rate-report.pdf	itpac;exploratory	diagnostic	see TeX source	Retain as rate/IT-PAC teaching material.
+minimal-rate-jacobian-itpac-report.tex	theory-model;exploratory	diagnostic	experiments/24_minimal_rate_jacobian_poc.py	Jacobian expansion and nominal rate comparison.
+minimal-rate-jacobian-itpac-report.pdf	theory-model;exploratory	diagnostic	see TeX source	Does not establish a critical data-rate threshold.
+quantized-rate-distortion-report.tex	exploratory	diagnostic	experiments/11_quantized_message_sweep.py	Frozen-policy quantized-message rate-distortion sweep.
+quantized-rate-distortion-report.pdf	exploratory	diagnostic	see TeX source	Policies were not retrained per bit rate.
+simulation-and-estimation-state.tex	theory-model;validation	historical snapshot	robust_walker/; experiments/14_amortized_plant_model.py	State of knowledge before later MLP/action work.
+simulation-and-estimation-state.pdf	theory-model;validation	historical snapshot	see TeX source	Retain as milestone.
+global-information-rate-discussion.tex	theory-model;exploratory	theory draft	none	Functional information and rate discussion; not final.
+global-information-rate-discussion.pdf	theory-model;exploratory	theory draft	see TeX source	Retain as theory history.
+elliit-theory-integration.md	theory-model	historical theory integration	reports in Talks/ELLIIT	Internal theory synthesis; not public evidence report.
+option-one-theory-measurements.tex	theory-model;exploratory	diagnostic	experiments/13_theory_measurements.py	Finite-time expansion and communication-rate measurements.
+option-one-theory-measurements.pdf	theory-model;exploratory	diagnostic	see TeX source	Didactic numerical measurements, not theorem proof.
+action-information-functional-rate-and-adversarial-disturbance.tex	theory-model;itpac;functional	current conceptual reference	robust_walker/	Definitions of RF, LF, action gain, and adversarial disturbance.
+action-information-functional-rate-and-adversarial-disturbance.pdf	theory-model;itpac;functional	current conceptual reference	see TeX source	Use as terminology reference.
+coding-implementation-summary.md	validation	current implementation reference	robust_walker/; experiments/	Explains code structure and reproducibility.
+report-catalog-and-migration-plan.md	validation	current planning document	all reports	Defines rubric and future folder structure.
+future-work-and-open-problems.md	exploratory	current future-work document	latest experiment outputs	Records inconclusive push-pull, functional PI, and rate-theorem issues.
+distributed-intelligence-sota-position.tex	theory-model	current theory reference	robust_walker/; experiments/18_history_estimator_audit.py; experiments/21_action_directed_information.py	Standalone SOTA/theory position; separates established theory, operational estimates, and conjectures.
+distributed-intelligence-sota-position.pdf	theory-model	current theory reference	see TeX source	Compiled 22 September 2026; 7 pages.
+action-directed-information-distributed-control-paper.tex	itpac;functional	current compact paper	robust_walker/; experiments/21_action_directed_information.py	ArXiv-style paper using corrected action data and current functional summary.
+action-directed-information-distributed-control-paper.pdf	itpac;functional	current compact paper	see TeX source	Compiled 22 September 2026; expanded 11-page version.
+di-walker-methodological-proposal-slide.pdf	theory-model;functional;itpac	current presentation asset	results/action_directed_information_corrected.csv	Large-font methodological proposal: action information, intervention, functional utility, robustness.
+di-walker-methodological-proposal-slide.png	theory-model;functional;itpac	current presentation asset	see PDF	Raster version for slide insertion or screen capture.
+di-walker-presentation-sheet.pdf	functional;itpac	current presentation asset	results/action_directed_information_corrected.csv	Presentation summary using corrected action results.
+di-walker-push-pull-explanation-slide.pdf	functional;exploratory	current secondary presentation asset	results/adversarial_push_pull_summary.csv	Optional explanation of adversarial push-pull; not primary DI evidence.
+results/four_architecture_cc_dropout_summary.csv	functional	current primary data	experiments/03_cc_dropout.py	Functional late path errors for active architectures.
+results/action_directed_information_corrected.csv	itpac;validation	current primary data	experiments/21_action_directed_information.py	Corrected post-event indexing; use instead of uncorrected CSV.
+results/adversarial_push_pull_summary.csv	functional;exploratory	current secondary data	experiments/26_adversarial_push_pull.py	3,456 frozen-policy push-pull rollouts.
+results/paper_functional_robustness.png	functional	current paper figure	results/four_architecture_cc_dropout_summary.csv	Dedicated functional-results figure; excludes the push-pull plot.
+experiments/31_plot_paper_functional_results.py	validation	current plotting utility	results/four_architecture_cc_dropout_summary.csv	Reproducibly generates the functional figure used by the compact paper.
+experiments/32_plot_paper_monochrome_figures.py	validation	current plotting utility	results/four_architecture_cc_dropout_summary.csv; results/action_directed_information_corrected.csv; results/predictor_quantization_itpac.csv	Generates all grayscale paper figures, including the explicit CC/quantization system diagram.
+results/paper_system_diagram_bw.png	theory-model	current paper figure	experiments/32_plot_paper_monochrome_figures.py	Monochrome causal ordering diagram with weak CC and quantized message.
+results/paper_functional_robustness_bw.png	functional	current paper figure	experiments/32_plot_paper_monochrome_figures.py	Monochrome functional robustness results.
+results/paper_action_gain_bw.png	itpac	current paper figure	experiments/32_plot_paper_monochrome_figures.py	Monochrome corrected action-directed gain.
+results/paper_predictor_quantization_bw.png	itpac	current paper figure	experiments/32_plot_paper_monochrome_figures.py	Monochrome predictor-only quantization, shuffle advantage, and efficiency.
