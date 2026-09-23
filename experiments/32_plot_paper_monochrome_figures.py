@@ -7,6 +7,7 @@ import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from matplotlib.lines import Line2D
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -152,7 +153,12 @@ def quantization_plot() -> None:
         axis.set_xlabel("Per-receiver nominal rate (bits/step)")
         axis.set_ylabel(ylabel)
         axis.grid(alpha=0.25)
-        axis.legend(fontsize=7)
+        handles = [
+            Line2D([], [], color=color, linestyle=linestyle, marker=marker,
+                   markersize=5, linewidth=1.5, label=names[key])
+            for key, (color, linestyle, marker) in styles.items()
+        ]
+        axis.legend(handles=handles, fontsize=7)
     fig.suptitle("Predictor-only message quantization: action-directed information", fontsize=16)
     fig.savefig(ROOT / "results" / "paper_predictor_quantization_bw.png", bbox_inches="tight", facecolor="white")
     plt.close(fig)
